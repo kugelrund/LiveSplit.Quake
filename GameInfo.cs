@@ -7,7 +7,7 @@ namespace LiveSplit.Quake
     class GameInfo
     {       
         private static readonly DeepPointer mapAddress = new DeepPointer(0x6FD148, new int[] { });
-        private static readonly DeepPointer mapTimeAddress = new DeepPointer(0x6108F0, new int[] { });
+        private static readonly DeepPointer gameStateAddress = new DeepPointer(0x7020A4, new int[] { });
         private static readonly DeepPointer intermissionTimeAddress = new DeepPointer(0x64F668, new int[] { });
         private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, new int[] { 0x2948 });
 
@@ -18,18 +18,19 @@ namespace LiveSplit.Quake
         public string PrevMap { get; private set; }
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
-        public double MapTime
+
+        public bool IsPaused
         {
             get
             {
-                float mapTime;
-                if (mapTimeAddress.Deref(gameProcess, out mapTime))
+                int gameState;
+                if (gameStateAddress.Deref(gameProcess, out gameState))
                 {
-                    return mapTime;
+                    return gameState != 0;
                 }
                 else
                 {
-                    return 0;
+                    return false;
                 }
             }
         }
