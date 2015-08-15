@@ -7,8 +7,10 @@ namespace LiveSplit.Quake
     class GameInfo
     {       
         private static readonly DeepPointer mapAddress = new DeepPointer(0x6FD148, new int[] { });
+        private static readonly DeepPointer mapTimeAddress = new DeepPointer(0x6108F0, new int[] { });
+        private static readonly DeepPointer intermissionTimeAddress = new DeepPointer(0x64F668, new int[] { });
+        private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, new int[] { 0x2948 });
 
-        
         private const int MAX_MAP_LENGTH = 5;
 
         private Process gameProcess;
@@ -16,6 +18,53 @@ namespace LiveSplit.Quake
         public string PrevMap { get; private set; }
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
+        public double MapTime
+        {
+            get
+            {
+                float mapTime;
+                if (mapTimeAddress.Deref(gameProcess, out mapTime))
+                {
+                    return mapTime;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public bool InIntermission
+        {
+            get
+            {
+                int intermissionTime;
+                if (intermissionTimeAddress.Deref(gameProcess, out intermissionTime))
+                {
+                    return intermissionTime != 0;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public float IngameTime
+        {
+            get
+            {
+                float ingameTime;
+                if (qdqTotalTimeAddress.Deref(gameProcess, out ingameTime))
+                {
+                    return ingameTime;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
 
 
         public GameInfo(Process gameProcess)
@@ -93,7 +142,7 @@ namespace LiveSplit.Quake
 
         public override bool HasOccured(GameInfo info)
         {
-            return (info.CurrMap == map);
+            return !info.InIntermission && (info.CurrMap == map);
         }
                 
         public override string ToString()
