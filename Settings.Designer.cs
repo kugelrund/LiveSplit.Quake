@@ -38,6 +38,7 @@
             this.lblAvailEvents = new System.Windows.Forms.Label();
             this.btnUp = new System.Windows.Forms.Button();
             this.btnDown = new System.Windows.Forms.Button();
+            this.chkUpdateGameTime = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lstUsedEvents
@@ -136,10 +137,22 @@
             this.btnDown.UseVisualStyleBackColor = true;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
+            // chkUpdateGameTime
+            // 
+            this.chkUpdateGameTime.AutoSize = true;
+            this.chkUpdateGameTime.Location = new System.Drawing.Point(13, 250);
+            this.chkUpdateGameTime.Name = "chkUpdateGameTime";
+            this.chkUpdateGameTime.Size = new System.Drawing.Size(218, 17);
+            this.chkUpdateGameTime.TabIndex = 17;
+            this.chkUpdateGameTime.Text = "Update game time between intermissions";
+            this.chkUpdateGameTime.UseVisualStyleBackColor = true;
+            this.chkUpdateGameTime.CheckedChanged += new System.EventHandler(this.chkUpdateGameTime_CheckedChanged);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkUpdateGameTime);
             this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnUp);
             this.Controls.Add(this.lblAvailEvents);
@@ -152,7 +165,7 @@
             this.Controls.Add(this.lstUsedEvents);
             this.Name = "Settings";
             this.Padding = new System.Windows.Forms.Padding(7);
-            this.Size = new System.Drawing.Size(459, 246);
+            this.Size = new System.Drawing.Size(459, 275);
             this.HandleDestroyed += new System.EventHandler(this.settings_HandleDestroyed);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -171,5 +184,6 @@
         private System.Windows.Forms.Label lblAvailEvents;
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button btnDown;
+        private System.Windows.Forms.CheckBox chkUpdateGameTime;
     }
 }

@@ -9,7 +9,7 @@ namespace LiveSplit.Quake
     {
         private readonly Dictionary<string, GameEvent> events;
 
-        public bool PauseGameTime { get; private set; }
+        public bool UpdateGameTime { get; private set; }
 
         private bool eventsChanged = false;
         public event EventHandler EventsChanged;
@@ -31,7 +31,7 @@ namespace LiveSplit.Quake
             {
                 lstAvailEvents.Items.Add(item);
             }
-            PauseGameTime = false;
+            UpdateGameTime = false;
         }
 
         public GameEvent[] GetEventList()
@@ -121,7 +121,12 @@ namespace LiveSplit.Quake
                 }
             }
         }
-        
+
+        private void chkUpdateGameTime_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateGameTime = chkUpdateGameTime.Checked;
+        }
+
         private void settings_HandleDestroyed(object sender, EventArgs e)
         {
             if (eventsChanged)
@@ -145,8 +150,8 @@ namespace LiveSplit.Quake
             }
             settingsNode.AppendChild(usedEventsNode);
 
-            XmlElement pauseGameTimeNode = document.CreateElement("pauseGameTime");
-            pauseGameTimeNode.InnerText = PauseGameTime.ToString();
+            XmlElement pauseGameTimeNode = document.CreateElement("updateGameTime");
+            pauseGameTimeNode.InnerText = UpdateGameTime.ToString();
             settingsNode.AppendChild(pauseGameTimeNode);
 
             return settingsNode;
@@ -168,6 +173,13 @@ namespace LiveSplit.Quake
 
                 eventsChanged = false;
                 OnChanged(EventArgs.Empty);
+            }
+
+            bool updateGameTime;
+            if (settings["updateGameTime"] != null && Boolean.TryParse(settings["updateGameTime"].InnerText, out updateGameTime))
+            {
+                UpdateGameTime = updateGameTime;
+                chkUpdateGameTime.Checked = UpdateGameTime;
             }
         }
     }

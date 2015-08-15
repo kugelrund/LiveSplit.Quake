@@ -34,8 +34,14 @@ namespace LiveSplit.Quake
         public Component(LiveSplitState state)
         {
             model = new TimerModel() { CurrentState = state };
+            state.OnStart += State_OnStart;
             eventList = settings.GetEventList();
             settings.EventsChanged += settings_EventsChanged;
+        }
+
+        private void State_OnStart(object sender, EventArgs e)
+        {
+            info.Reset();
         }
 
         public void Update(UI.IInvalidator invalidator, Model.LiveSplitState state, float width, float height, UI.LayoutMode mode)
@@ -43,17 +49,28 @@ namespace LiveSplit.Quake
             if (gameProcess != null && !gameProcess.HasExited)
             {
                 info.Update();
+                state.IsGameTimePaused = true;
+
+                if (info.InIntermission)
+                {
+                    state.SetGameTime(TimeSpan.FromSeconds(info.IngameTime));
+                }
+
                 if (eventList[state.CurrentSplitIndex + 1].HasOccured(info))
                 {
                     if (state.CurrentPhase == TimerPhase.NotRunning)
                     {
-                        state.IsGameTimePaused = false;
+                        state.SetGameTime(TimeSpan.Zero);
                         model.Start();
                     }
                     else
                     {
                         model.Split();
                     }
+                }
+                else if (settings.UpdateGameTime && !info.InIntermission && info.CurrMap != "start")
+                {
+                    state.SetGameTime(TimeSpan.FromSeconds(info.IngameTime + info.MapTime));
                 }
             }
             else
