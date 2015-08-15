@@ -1,7 +1,7 @@
 LiveSplit.Quake
 =================
 
-LiveSplit auto splitter for Quake. Can also pause LiveSplits game timer while in loading screens.
+LiveSplit auto splitter for Quake, more specifically the port joequake-gl. Uses qdqstats for ingame timing (choose "Game Time" in LiveSplit).
 
 Manual Installation
 -------------------
