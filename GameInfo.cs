@@ -15,7 +15,6 @@ namespace LiveSplit.Quake
 
         private Process gameProcess;
         
-        public string PrevMap { get; private set; }
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
 
@@ -79,7 +78,6 @@ namespace LiveSplit.Quake
             mapAddress.Deref(gameProcess, out map, MAX_MAP_LENGTH);
             if (map.Length > 0 && map != CurrMap)
             {
-                PrevMap = CurrMap;
                 CurrMap = map;
                 MapChanged = true;
             }
@@ -92,6 +90,11 @@ namespace LiveSplit.Quake
         public void Update()
         {
             UpdateMap();
+        }
+
+        public void Reset()
+        {
+            CurrMap = "";
         }
     }
 
@@ -143,7 +146,7 @@ namespace LiveSplit.Quake
 
         public override bool HasOccured(GameInfo info)
         {
-            return !info.InIntermission && (info.CurrMap == map);
+            return info.MapChanged && (info.CurrMap == map);
         }
                 
         public override string ToString()

@@ -35,7 +35,13 @@ namespace LiveSplit.Quake
         {
             model = new TimerModel() { CurrentState = state };
             eventList = settings.GetEventList();
+            state.OnReset += State_OnReset;
             settings.EventsChanged += settings_EventsChanged;
+        }
+
+        private void State_OnReset(object sender, TimerPhase value)
+        {
+            info.Reset();
         }
 
         public void Update(UI.IInvalidator invalidator, Model.LiveSplitState state, float width, float height, UI.LayoutMode mode)
