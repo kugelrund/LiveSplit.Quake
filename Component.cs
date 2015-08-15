@@ -43,7 +43,14 @@ namespace LiveSplit.Quake
             if (gameProcess != null && !gameProcess.HasExited)
             {
                 info.Update();
-                state.IsGameTimePaused = true;
+                if (settings.UpdateGameTime && !info.InIntermission && !info.IsPaused && info.CurrMap != "start")
+                {
+                    state.IsGameTimePaused = false;
+                }
+                else
+                {
+                    state.IsGameTimePaused = true;
+                }
 
                 if (info.InIntermission)
                 {
@@ -61,10 +68,6 @@ namespace LiveSplit.Quake
                     {
                         model.Split();
                     }
-                }
-                else if (settings.UpdateGameTime && !info.InIntermission && info.CurrMap != "start")
-                {
-                    state.SetGameTime(TimeSpan.FromSeconds(info.IngameTime + info.MapTime));
                 }
             }
             else

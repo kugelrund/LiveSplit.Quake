@@ -150,9 +150,9 @@ namespace LiveSplit.Quake
             }
             settingsNode.AppendChild(usedEventsNode);
 
-            XmlElement pauseGameTimeNode = document.CreateElement("updateGameTime");
-            pauseGameTimeNode.InnerText = UpdateGameTime.ToString();
-            settingsNode.AppendChild(pauseGameTimeNode);
+            XmlElement updateGameTimeNode = document.CreateElement("updateGameTime");
+            updateGameTimeNode.InnerText = UpdateGameTime.ToString();
+            settingsNode.AppendChild(updateGameTimeNode);
 
             return settingsNode;
         }
