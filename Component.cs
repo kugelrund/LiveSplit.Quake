@@ -34,14 +34,8 @@ namespace LiveSplit.Quake
         public Component(LiveSplitState state)
         {
             model = new TimerModel() { CurrentState = state };
-            state.OnStart += State_OnStart;
             eventList = settings.GetEventList();
             settings.EventsChanged += settings_EventsChanged;
-        }
-
-        private void State_OnStart(object sender, EventArgs e)
-        {
-            info.Reset();
         }
 
         public void Update(UI.IInvalidator invalidator, Model.LiveSplitState state, float width, float height, UI.LayoutMode mode)
