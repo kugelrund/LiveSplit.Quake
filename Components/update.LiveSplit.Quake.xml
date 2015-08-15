@@ -1,7 +1,7 @@
 <updates>
     <update version="1.0">
         <files>
-            <file path="Components/LiveSplit.StVoyEf.dll" status="changed"/>
+            <file path="Components/LiveSplit.Quake.dll" status="changed"/>
         </files>
         <changelog>
             <change>
