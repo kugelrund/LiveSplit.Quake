@@ -31,7 +31,7 @@ namespace LiveSplit.Quake
             {
                 lstAvailEvents.Items.Add(item);
             }
-            UpdateGameTime = false;
+            UpdateGameTime = true;
         }
 
         public GameEvent[] GetEventList()

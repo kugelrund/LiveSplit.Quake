@@ -48,19 +48,12 @@ namespace LiveSplit.Quake
         {
             if (gameProcess != null && !gameProcess.HasExited)
             {
+                state.IsGameTimePaused = true;
                 info.Update();
-                if (settings.UpdateGameTime && !info.InIntermission && !info.IsPaused && info.CurrMap != "start")
-                {
-                    state.IsGameTimePaused = false;
-                }
-                else
-                {
-                    state.IsGameTimePaused = true;
-                }
 
-                if (info.InIntermission && info.IngameTime > 0)
+                if (info.InIntermission)
                 {
-                    state.SetGameTime(TimeSpan.FromSeconds(info.IngameTime));
+                    state.SetGameTime(TimeSpan.FromSeconds(info.IntermissionTime));
                 }
 
                 if (eventList[state.CurrentSplitIndex + 1].HasOccured(info))
@@ -74,6 +67,11 @@ namespace LiveSplit.Quake
                     {
                         model.Split();
                     }
+                }
+
+                if (settings.UpdateGameTime)
+                {
+                    state.SetGameTime(TimeSpan.FromSeconds(info.IntermissionTime + info.MapTime));
                 }
             }
             else

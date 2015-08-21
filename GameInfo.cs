@@ -7,7 +7,7 @@ namespace LiveSplit.Quake
     class GameInfo
     {       
         private static readonly DeepPointer mapAddress = new DeepPointer(0x6FD148, new int[] { });
-        private static readonly DeepPointer gameStateAddress = new DeepPointer(0x7020A4, new int[] { });
+        private static readonly DeepPointer mapTimeAddress = new DeepPointer(0x6108F0, new int[] { });
         private static readonly DeepPointer intermissionTimeAddress = new DeepPointer(0x64F668, new int[] { });
         private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, new int[] { 0x2948 });
 
@@ -17,54 +17,10 @@ namespace LiveSplit.Quake
         
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
+        public float IntermissionTime { get; private set; }
+        public float MapTime { get; private set; }
+        public bool InIntermission { get; private set; }
 
-        public bool IsPaused
-        {
-            get
-            {
-                int gameState;
-                if (gameStateAddress.Deref(gameProcess, out gameState))
-                {
-                    return gameState != 0;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public bool InIntermission
-        {
-            get
-            {
-                int intermissionTime;
-                if (intermissionTimeAddress.Deref(gameProcess, out intermissionTime))
-                {
-                    return intermissionTime != 0;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public float IngameTime
-        {
-            get
-            {
-                float ingameTime;
-                if (qdqTotalTimeAddress.Deref(gameProcess, out ingameTime))
-                {
-                    return ingameTime;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
 
 
         public GameInfo(Process gameProcess)
@@ -90,11 +46,47 @@ namespace LiveSplit.Quake
         public void Update()
         {
             UpdateMap();
+
+            int intermissionScreenTime;
+            if (intermissionTimeAddress.Deref(gameProcess, out intermissionScreenTime))
+            {
+                InIntermission = (intermissionScreenTime != 0);
+            }
+
+            if (InIntermission)
+            {
+                float intermissionTime;
+                if (qdqTotalTimeAddress.Deref(gameProcess, out intermissionTime))
+                {
+                    if (intermissionTime > 0)
+                    {
+                        IntermissionTime = intermissionTime;
+                    }
+                }
+
+                MapTime = 0;
+            }
+            else if (CurrMap == "start")
+            {
+                MapTime = 0;
+            }
+            else
+            { 
+                float mapTime;
+                if (mapTimeAddress.Deref(gameProcess, out mapTime))
+                {
+                    if (MapTime != 0 || mapTime < 3)  // hack to not update when map time hasn't been reset yet
+                    {
+                        MapTime = mapTime;
+                    }
+                }
+            }
         }
 
         public void Reset()
         {
             CurrMap = "";
+            InIntermission = false;
         }
     }
 

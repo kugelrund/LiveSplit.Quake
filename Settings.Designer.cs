@@ -140,11 +140,13 @@
             // chkUpdateGameTime
             // 
             this.chkUpdateGameTime.AutoSize = true;
+            this.chkUpdateGameTime.Checked = true;
+            this.chkUpdateGameTime.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkUpdateGameTime.Location = new System.Drawing.Point(13, 250);
             this.chkUpdateGameTime.Name = "chkUpdateGameTime";
-            this.chkUpdateGameTime.Size = new System.Drawing.Size(240, 17);
+            this.chkUpdateGameTime.Size = new System.Drawing.Size(218, 17);
             this.chkUpdateGameTime.TabIndex = 17;
-            this.chkUpdateGameTime.Text = "Don\'t pause game time between intermissions";
+            this.chkUpdateGameTime.Text = "Update game time between intermissions";
             this.chkUpdateGameTime.UseVisualStyleBackColor = true;
             this.chkUpdateGameTime.CheckedChanged += new System.EventHandler(this.chkUpdateGameTime_CheckedChanged);
             // 
