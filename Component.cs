@@ -58,7 +58,7 @@ namespace LiveSplit.Quake
                     state.IsGameTimePaused = true;
                 }
 
-                if (info.InIntermission)
+                if (info.InIntermission && info.IngameTime > 0)
                 {
                     state.SetGameTime(TimeSpan.FromSeconds(info.IngameTime));
                 }
