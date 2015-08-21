@@ -61,10 +61,9 @@ namespace LiveSplit.Quake
                     if (intermissionTime > 0)
                     {
                         IntermissionTime = intermissionTime;
+                        MapTime = 0;
                     }
                 }
-
-                MapTime = 0;
             }
             else if (CurrMap == "start")
             {
