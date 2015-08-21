@@ -87,6 +87,7 @@ namespace LiveSplit.Quake
         {
             CurrMap = "";
             InIntermission = false;
+            IntermissionTime = 0;
         }
     }
 
