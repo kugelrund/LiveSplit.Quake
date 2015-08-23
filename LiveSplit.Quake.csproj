@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Component.cs" />
-    <Compile Include="DeepPointer.cs" />
     <Compile Include="GameInfo.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
