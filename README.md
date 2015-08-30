@@ -3,9 +3,9 @@ LiveSplit.Quake
 
 LiveSplit auto splitter for Quake, more specifically the port joequake-gl. Uses qdqstats for ingame timing (choose "Game Time" in LiveSplit).
 
-Manual Installation
--------------------
-Download "LiveSplit.Quake.dll" and place it into the subdirectory "Components" of your LiveSplit folder. You can then add it to your layout (category "Control").
+Installation
+------------
+Enter "Quake" in LiveSplit's splits editor and click activate.
 
 Usage
 -----
