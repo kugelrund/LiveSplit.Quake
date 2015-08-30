@@ -91,6 +91,7 @@ namespace LiveSplit.Quake
             lstUsedEvents.BeginUpdate();
             lstUsedEvents.Items.Clear();
             lstUsedEvents.EndUpdate();
+            eventsChanged = true;
         }
 
 
@@ -106,6 +107,8 @@ namespace LiveSplit.Quake
                     lstUsedEvents.SelectedIndices.Add(index - 1);
                 }
             }
+
+            eventsChanged = true;
         }
 
         private void btnDown_Click(object sender, EventArgs e)
@@ -120,6 +123,8 @@ namespace LiveSplit.Quake
                     lstUsedEvents.SelectedIndices.Add(index + 1);
                 }
             }
+
+            eventsChanged = true;
         }
 
         private void chkUpdateGameTime_CheckedChanged(object sender, EventArgs e)

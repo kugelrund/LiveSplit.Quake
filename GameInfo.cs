@@ -30,9 +30,8 @@ namespace LiveSplit.Quake
 
         private void UpdateMap()
         {
-            string map;
-            mapAddress.Deref(gameProcess, out map, MAX_MAP_LENGTH);
-            if (map.Length > 0 && map != CurrMap)
+            string map = mapAddress.DerefString(gameProcess, MAX_MAP_LENGTH);
+            if (map != null && map != CurrMap)
             {
                 CurrMap = map;
                 MapChanged = true;
