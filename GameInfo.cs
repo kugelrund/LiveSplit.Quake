@@ -15,6 +15,13 @@ namespace LiveSplit.Quake
 
         private Process gameProcess;
         
+        public Process GameProcess
+        {
+            get
+            {
+                return gameProcess;
+            }
+        }
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
         public float IntermissionTime { get; private set; }

@@ -1,22 +1,32 @@
 <updates>
-    <update version="1.3">
-        <files>
-            <file path="Components/LiveSplit.Quake.dll" status="changed"/>
-        </files>
-        <changelog>
-            <change>
-                Update for LiveSplit 1.6.
-            </change>
-        </changelog>
-    </update>
-    <update version="1.0">
-        <files>
-            <file path="Components/LiveSplit.Quake.dll" status="changed"/>
-        </files>
-        <changelog>
-            <change>
-                Initial release.
-            </change>
-        </changelog>
-    </update>
+  <update version="1.4">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Fixed problems with process recognition when restarting the game.
+      </change>
+    </changelog>
+  </update>
+  <update version="1.3">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Update for LiveSplit 1.6.
+      </change>
+    </changelog>
+  </update>
+  <update version="1.0">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Initial release.
+      </change>
+    </changelog>
+  </update>
 </updates>

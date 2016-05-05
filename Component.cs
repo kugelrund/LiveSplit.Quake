@@ -11,8 +11,7 @@ namespace LiveSplit.Quake
     {
         private Settings settings = new Settings();
         private TimerModel model = null;
-
-        private Process gameProcess = null;
+        
         private GameInfo info = null;
         private GameEvent[] eventList = null;
         
@@ -40,7 +39,7 @@ namespace LiveSplit.Quake
 
         public override void Update(UI.IInvalidator invalidator, Model.LiveSplitState state, float width, float height, UI.LayoutMode mode)
         {
-            if (gameProcess != null && !gameProcess.HasExited)
+            if (info != null && !info.GameProcess.HasExited)
             {
                 state.IsGameTimePaused = true;
                 info.Update();
@@ -70,10 +69,14 @@ namespace LiveSplit.Quake
             }
             else
             {
-                gameProcess = Process.GetProcessesByName("joequake-gl").FirstOrDefault();
-                if (gameProcess != null)
+                Process gameProcess = Process.GetProcessesByName("joequake-gl").FirstOrDefault();
+                if (gameProcess != null && !gameProcess.HasExited)
                 {
                     info = new GameInfo(gameProcess);
+                }
+                else
+                {
+                    info = null;
                 }
             }
         }
