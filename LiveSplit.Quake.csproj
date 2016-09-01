@@ -52,19 +52,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component.cs" />
-    <Compile Include="GameInfo.cs" />
-    <Compile Include="Factory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs">
+    <Compile Include="LiveSplit.ComponentAutosplitter\ChangeEventForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LiveSplit.ComponentAutosplitter\ChangeEventForm.Designer.cs">
+      <DependentUpon>ChangeEventForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LiveSplit.ComponentAutosplitter\Component.cs" />
+    <Compile Include="LiveSplit.ComponentAutosplitter\Game.cs" />
+    <Compile Include="LiveSplit.ComponentAutosplitter\Settings.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
+    <Compile Include="LiveSplit.ComponentAutosplitter\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="QuakeGame.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Settings.resx">
+    <EmbeddedResource Include="LiveSplit.ComponentAutosplitter\ChangeEventForm.resx">
+      <DependentUpon>ChangeEventForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LiveSplit.ComponentAutosplitter\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

@@ -1,0 +1,3 @@
+[submodule "LiveSplit.ComponentAutosplitter"]
+	path = LiveSplit.ComponentAutosplitter
+	url = https://github.com/kugelrund/LiveSplit.ComponentAutosplitter

@@ -1,43 +1,27 @@
-﻿using LiveSplit.Model;
-using LiveSplit.UI.Components;
-using System;
+﻿using System;
 using System.Reflection;
+using LiveSplit.ComponentAutosplitter;
+using LiveSplit.Model;
+using LiveSplit.UI.Components;
 
 namespace LiveSplit.Quake
 {
-    public class Factory : IComponentFactory
+    class Factory : IComponentFactory
     {
-        public string ComponentName
-        {
-            get { return "Quake Auto Splitter"; }
-        }
-        public ComponentCategory Category
-        {
-            get { return ComponentCategory.Control; }
-        }
-        public string Description
-        {
-            get { return "Automates splitting for Quake and allows to remove loadtimes."; }
-        }
+        private QuakeGame game = new QuakeGame();
+
+        public string ComponentName => game.Name + "Auto Splitter";
+        public string Description => "Automates splitting for " + game.Name + " and supports game time.";
+        public ComponentCategory Category => ComponentCategory.Control;
+
+        public string UpdateName => ComponentName;
+        public string UpdateURL => "https://raw.githubusercontent.com/kugelrund/LiveSplit.Quake/master/";
+        public Version Version => Assembly.GetExecutingAssembly().GetName().Version;
+        public string XMLURL => UpdateURL + "Components/update.LiveSplit.Quake.xml";
+
         public IComponent Create(LiveSplitState state)
         {
-            return new Component(state);
-        }
-        public string UpdateName
-        {
-            get { return ComponentName; }
-        }
-        public string UpdateURL
-        {
-            get { return "https://raw.githubusercontent.com/kugelrund/LiveSplit.Quake/master/"; }
-        }
-        public Version Version
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version; }
-        }
-        public string XMLURL
-        {
-            get { return UpdateURL + "Components/update.LiveSplit.Quake.xml"; }
+            return new Component(game, state);
         }
     }
 }
