@@ -88,13 +88,15 @@ namespace LiveSplit.ComponentAutosplitter
         private static readonly Int32 mapAddress = 0x6FD148;
         private static readonly Int32 mapTimeAddress = 0x6108F0;
         private static readonly Int32 gameStateAddress = 0x64F664;
-        private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
+        private static readonly DeepPointer qdqMapTimeAddress = new DeepPointer(0x6FBFF8, 0x335C);
 
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
         public float IntermissionTime { get; private set; }
         public float MapTime { get; private set; }
         public QuakeState CurrGameState { get; private set; }
+
+        private bool mapTimeUpdateDone = false;
 
         private void UpdateMap()
         {
@@ -125,23 +127,40 @@ namespace LiveSplit.ComponentAutosplitter
 
             if (CurrGameState != QuakeState.Playing)
             {
-                float intermissionTime;
-                if (qdqTotalTimeAddress.Deref(gameProcess, out intermissionTime))
+                if (!mapTimeUpdateDone)
                 {
-                    if (intermissionTime > 0)
+                    float qdqMapTime;
+                    if (qdqMapTimeAddress.Deref(gameProcess, out qdqMapTime))
                     {
-                        IntermissionTime = intermissionTime;
-                        MapTime = 0;
+                        if (qdqMapTime > 0)
+                        {
+                            IntermissionTime += qdqMapTime;
+                            MapTime = 0;
+                        }
+                        else
+                        {
+                            IntermissionTime += MapTime;
+                            MapTime = 0;
+                        }
                     }
+
+                    mapTimeUpdateDone = true;
                 }
 
                 GameTime = IntermissionTime;
             }
             else
             {
+                mapTimeUpdateDone = false;
+
                 float mapTime;
                 if (gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime))
                 {
+                    if (MapTime > mapTime)
+                    {
+                        IntermissionTime += MapTime;
+                    }
+
                     if (MapTime != 0 || mapTime < 3)  // hack to not update when map time hasn't been reset yet
                     {
                         MapTime = mapTime;
