@@ -158,7 +158,7 @@ namespace LiveSplit.ComponentAutosplitter
                 {
                     if (MapTime > mapTime)
                     {
-                        IntermissionTime += MapTime;
+                        IntermissionTime += MapTime - mapTime;
                     }
 
                     if (MapTime != 0 || mapTime < 3)  // hack to not update when map time hasn't been reset yet
