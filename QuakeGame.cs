@@ -88,15 +88,16 @@ namespace LiveSplit.ComponentAutosplitter
         private static readonly Int32 mapAddress = 0x6FD148;
         private static readonly Int32 mapTimeAddress = 0x6108F0;
         private static readonly Int32 gameStateAddress = 0x64F664;
-        private static readonly DeepPointer qdqMapTimeAddress = new DeepPointer(0x6FBFF8, 0x335C);
+        private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
+        private bool mapTimeUpdateDone = false;
+        private bool totalTimeReset = false;
+        private float lastAccurateTotalTime = 0;
 
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
         public float IntermissionTime { get; private set; }
         public float MapTime { get; private set; }
         public QuakeState CurrGameState { get; private set; }
-
-        private bool mapTimeUpdateDone = false;
 
         private void UpdateMap()
         {
@@ -127,26 +128,23 @@ namespace LiveSplit.ComponentAutosplitter
 
             if (CurrGameState != QuakeState.Playing)
             {
-                if (!mapTimeUpdateDone)
+                float qdqTotalTime;
+                if (qdqTotalTimeAddress.Deref(gameProcess, out qdqTotalTime) && qdqTotalTime > 0 && !totalTimeReset)
                 {
-                    float qdqMapTime;
-                    if (qdqMapTimeAddress.Deref(gameProcess, out qdqMapTime))
+                    IntermissionTime = qdqTotalTime + lastAccurateTotalTime;
+                }
+                else
+                {
+                    if (!mapTimeUpdateDone)
                     {
-                        if (qdqMapTime > 0)
-                        {
-                            IntermissionTime += qdqMapTime;
-                            MapTime = 0;
-                        }
-                        else
-                        {
-                            IntermissionTime += MapTime;
-                            MapTime = 0;
-                        }
+                        lastAccurateTotalTime = IntermissionTime;
+                        IntermissionTime += MapTime;
+                        totalTimeReset = false;
+                        mapTimeUpdateDone = true;
                     }
-
-                    mapTimeUpdateDone = true;
                 }
 
+                MapTime = 0;
                 GameTime = IntermissionTime;
             }
             else
@@ -158,7 +156,9 @@ namespace LiveSplit.ComponentAutosplitter
                 {
                     if (MapTime > mapTime)
                     {
+                        lastAccurateTotalTime = IntermissionTime;
                         IntermissionTime += MapTime - mapTime;
+                        totalTimeReset = true;
                     }
 
                     if (MapTime != 0 || mapTime < 3)  // hack to not update when map time hasn't been reset yet
@@ -181,6 +181,9 @@ namespace LiveSplit.ComponentAutosplitter
             CurrMap = "";
             CurrGameState = QuakeState.Playing;
             IntermissionTime = 0;
+            mapTimeUpdateDone = false;
+            totalTimeReset = false;
+            lastAccurateTotalTime = 0;
         }
     }
 }
