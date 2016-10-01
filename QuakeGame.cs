@@ -89,13 +89,13 @@ namespace LiveSplit.ComponentAutosplitter
         private static readonly Int32 mapTimeAddress = 0x6108F0;
         private static readonly Int32 gameStateAddress = 0x64F664;
         private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
-        private bool mapTimeUpdateDone = false;
-        private bool totalTimeReset = false;
-        private float lastAccurateTotalTime = 0;
+
+        private bool backupUpdateDone = false;
+        private float savedTotalTime = 0;
 
         public string CurrMap { get; private set; }
         public bool MapChanged { get; private set; }
-        public float IntermissionTime { get; private set; }
+        public float TotalTime { get; private set; }
         public float MapTime { get; private set; }
         public QuakeState CurrGameState { get; private set; }
 
@@ -128,51 +128,68 @@ namespace LiveSplit.ComponentAutosplitter
 
             if (CurrGameState != QuakeState.Playing)
             {
+                //
+                // we are in an intermission, so total time should be available now. Try to get that
+                // total time. If that fails go for the backup
+                //
+
                 float qdqTotalTime;
-                if (qdqTotalTimeAddress.Deref(gameProcess, out qdqTotalTime) && qdqTotalTime > 0 && !totalTimeReset)
+                if (qdqTotalTimeAddress.Deref(gameProcess, out qdqTotalTime) && qdqTotalTime > 0)
                 {
-                    IntermissionTime = qdqTotalTime + lastAccurateTotalTime;
+                    // hooray, getting total time succeeded
+
+                    // set time to the one that qdqstats says + an eventually saved one that isn't included
+                    // in the qdqTotalTime because there was a reset or quickload
+                    TotalTime = qdqTotalTime + savedTotalTime;
                 }
-                else
+                else if (!backupUpdateDone)
                 {
-                    if (!mapTimeUpdateDone)
-                    {
-                        lastAccurateTotalTime = IntermissionTime;
-                        IntermissionTime += MapTime;
-                        totalTimeReset = false;
-                        mapTimeUpdateDone = true;
-                    }
+                    // getting total time failed, so go for the backup timing, which means we store
+                    // the total time we have so far to be able to continue using the qdqstats times later on
+                    // and add the current (slightly inaccurate) MapTime to TotalTime
+                    savedTotalTime = TotalTime;
+                    TotalTime += MapTime;
+                    backupUpdateDone = true;
                 }
 
                 MapTime = 0;
-                GameTime = IntermissionTime;
+                GameTime = TotalTime;
             }
             else
             {
-                mapTimeUpdateDone = false;
+                //
+                // in game, so don't have to deal with intermission stuff.
+                //
+
+                // forget whatever happened in the last intermission
+                backupUpdateDone = false;
 
                 float mapTime;
                 if (gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime))
                 {
                     if (MapTime > mapTime)
                     {
-                        lastAccurateTotalTime = IntermissionTime;
-                        IntermissionTime += MapTime - mapTime;
-                        totalTimeReset = true;
+                        // new map time is smaller than old map time? This means that there was a quickload, so
+                        // qdqstats' total time will be reset. Therefore we have to go for the backup timing.
+                        TotalTime += MapTime - mapTime;
+                        savedTotalTime = TotalTime;
                     }
 
-                    if (MapTime != 0 || mapTime < 3)  // hack to not update when map time hasn't been reset yet
-                    {
+                    if (MapTime != 0 || mapTime < 3)
+                    { 
+                        // hack to not update when map time hasn't been reset yet
                         MapTime = mapTime;
                     }
                 }
 
                 if (CurrMap == "start")
                 {
+                    // timing according to rules doesnt include the time spent on the start map.
+                    // literally cheating if you ask me...
                     MapTime = 0;
                 }
 
-                GameTime = MapTime + IntermissionTime;
+                GameTime = MapTime + TotalTime;
             }
         }
 
@@ -180,10 +197,9 @@ namespace LiveSplit.ComponentAutosplitter
         {
             CurrMap = "";
             CurrGameState = QuakeState.Playing;
-            IntermissionTime = 0;
-            mapTimeUpdateDone = false;
-            totalTimeReset = false;
-            lastAccurateTotalTime = 0;
+            TotalTime = 0;
+            backupUpdateDone = false;
+            savedTotalTime = 0;
         }
     }
 }
