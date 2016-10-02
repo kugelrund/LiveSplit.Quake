@@ -91,6 +91,7 @@ namespace LiveSplit.ComponentAutosplitter
         private static readonly DeepPointer qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
 
         private bool backupUpdateDone = false;
+        private bool qdqUpdateDone = false;
         private float savedTotalTime = 0;
 
         public string CurrMap { get; private set; }
@@ -141,8 +142,9 @@ namespace LiveSplit.ComponentAutosplitter
                     // set time to the one that qdqstats says + an eventually saved one that isn't included
                     // in the qdqTotalTime because there was a reset or quickload
                     TotalTime = qdqTotalTime + savedTotalTime;
+                    qdqUpdateDone = true;
                 }
-                else if (!backupUpdateDone)
+                else if (!qdqUpdateDone && !backupUpdateDone)
                 {
                     // getting total time failed, so go for the backup timing, which means we store
                     // the total time we have so far to be able to continue using the qdqstats times later on
@@ -163,6 +165,7 @@ namespace LiveSplit.ComponentAutosplitter
 
                 // forget whatever happened in the last intermission
                 backupUpdateDone = false;
+                qdqUpdateDone = false;
 
                 float mapTime;
                 if (gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime))
@@ -199,6 +202,7 @@ namespace LiveSplit.ComponentAutosplitter
             CurrGameState = QuakeState.Playing;
             TotalTime = 0;
             backupUpdateDone = false;
+            qdqUpdateDone = false;
             savedTotalTime = 0;
         }
     }
