@@ -1,4 +1,26 @@
 <updates>
+  <update version="1.5">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Added support for NeaQuake
+      </change>
+      <change>
+        Improved settings editor
+      </change>
+      <change>
+        Added support for custom maps
+      </change>
+      <change>
+        Can now autosplit when Shub Niggurath is dead
+      </change>
+      <change>
+        Ingame time now keeps working when restarting a map (qs/ql doesn't work though, qdqstats is weird with that)
+      </change>
+    </changelog>
+  </update>
   <update version="1.4">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
