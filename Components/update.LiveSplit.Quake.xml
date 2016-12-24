@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.6">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add option to disable keeping IGT going for ILs
+      </change>
+    </changelog>
+  </update>
   <update version="1.5">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>

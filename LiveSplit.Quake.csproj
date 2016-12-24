@@ -59,6 +59,7 @@
       <DependentUpon>ChangeEventForm.cs</DependentUpon>
     </Compile>
     <Compile Include="LiveSplit.ComponentAutosplitter\Component.cs" />
+    <Compile Include="LiveSplit.ComponentAutosplitter\CustomSetting.cs" />
     <Compile Include="LiveSplit.ComponentAutosplitter\Game.cs" />
     <Compile Include="LiveSplit.ComponentAutosplitter\Settings.cs">
       <SubType>UserControl</SubType>

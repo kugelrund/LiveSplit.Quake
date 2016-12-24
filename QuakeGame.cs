@@ -15,6 +15,11 @@ namespace LiveSplit.Quake
         public override bool GameTimeExists => true;
         public override bool LoadRemovalExists => false;
 
+        public QuakeGame() : base(new CustomSettingBool[]
+            { new CustomSettingBool("Keep IGT going when restarting map", false) })
+        { 
+        }
+
         public override GameEvent ReadLegacyEvent(string id)
         {
             // fallback to read old autosplitter settings
@@ -97,6 +102,7 @@ namespace LiveSplit.ComponentAutosplitter
         private DeepPointer qdqTotalTimeAddress;
 
         private GameVersion gameVersion;
+        private bool keepInGameTimeGoing = false;
         
         private float savedTotalTime = 0;
 
@@ -105,6 +111,11 @@ namespace LiveSplit.ComponentAutosplitter
         public float TotalTime { get; private set; }
         public float MapTime { get; private set; }
         public QuakeState CurrGameState { get; private set; }
+
+        partial void SetCustomSettings(CustomSettingBool[] customSettings)
+        {
+            keepInGameTimeGoing = customSettings[0].Value;
+        }
 
         partial void GetVersion()
         {
@@ -188,7 +199,7 @@ namespace LiveSplit.ComponentAutosplitter
                 float mapTime;
                 if (gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime))
                 {
-                    if (MapTime > mapTime)
+                    if (keepInGameTimeGoing && MapTime > mapTime)
                     {
                         // new map time is smaller than old map time? This means that there was a reset, so
                         // qdqstats' total time will be reset. Therefore update savedTotalTime
