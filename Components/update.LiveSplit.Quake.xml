@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.7">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Fix crash when creating new splits.
+      </change>
+    </changelog>
+  </update>
   <update version="1.6">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
