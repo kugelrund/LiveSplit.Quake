@@ -99,7 +99,8 @@ namespace LiveSplit.ComponentAutosplitter
         private Int32 mapAddress;
         private Int32 mapTimeAddress;
         private Int32 gameStateAddress;
-        private DeepPointer qdqTotalTimeAddress;
+        private Int32 gameNameAddress;
+        private DeepPointer totalTimeAddress;
 
         private GameVersion gameVersion;
         private bool keepInGameTimeGoing = false;
@@ -138,13 +139,44 @@ namespace LiveSplit.ComponentAutosplitter
                     mapAddress = 0x6FD148;
                     mapTimeAddress = 0x6108F0;
                     gameStateAddress = 0x64F664;
-                    qdqTotalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
+                    gameNameAddress = 0x61E23D;
                     break;
                 case GameVersion.NeaQuake:
                     mapAddress = 0x26E368;
                     mapTimeAddress = 0x2619EC;
                     gameStateAddress = 0xB6AA84;
-                    qdqTotalTimeAddress = new DeepPointer(0x28085C, 0x2948);
+                    gameNameAddress = 0x12F101;
+                    break;
+            }
+            
+            System.Threading.Thread.Sleep(200);  // a bit stupid but just to make sure
+                                                 // game name is set already
+            StringBuilder gameNameBuilder = new StringBuilder(32);
+            gameProcess.ReadString(baseAddress + gameNameAddress, gameNameBuilder);
+            string gameName = gameNameBuilder.ToString();            
+            switch (gameName)
+            {
+                case "hipnotic":
+                    switch (gameVersion)
+                    {
+                        case GameVersion.JoeQuake:
+                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x40AC);
+                            break;
+                        case GameVersion.NeaQuake:
+                            totalTimeAddress = new DeepPointer(0x28085C, 0x40AC);
+                            break;
+                    }
+                    break;
+                default:
+                    switch (gameVersion)
+                    {
+                        case GameVersion.JoeQuake:
+                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
+                            break;
+                        case GameVersion.NeaQuake:
+                            totalTimeAddress = new DeepPointer(0x28085C, 0x2948);
+                            break;
+                    }
                     break;
             }
         }
@@ -179,12 +211,12 @@ namespace LiveSplit.ComponentAutosplitter
             if (CurrGameState != QuakeState.Playing)
             {
                 // we are in an intermission, so total time should be available now.
-                float qdqTotalTime;
-                if (qdqTotalTimeAddress.Deref(gameProcess, out qdqTotalTime) && qdqTotalTime > 0)
+                float currentTotalTime;
+                if (totalTimeAddress.Deref(gameProcess, out currentTotalTime) && currentTotalTime > 0)
                 {
                     // set time to the one that qdqstats says + an eventually saved one that isn't included
                     // in the qdqTotalTime because there was a reset
-                    TotalTime = qdqTotalTime + savedTotalTime;
+                    TotalTime = currentTotalTime + savedTotalTime;
                 }
 
                 MapTime = 0;
