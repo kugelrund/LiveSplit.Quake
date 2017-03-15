@@ -259,7 +259,8 @@ namespace LiveSplit.ComponentAutosplitter
 
         partial void ResetInfo()
         {
-            CurrMap = "";
+            UpdateMap();
+            MapChanged = false;
             CurrGameState = QuakeState.Playing;
             TotalTime = 0;
             savedTotalTime = 0;
