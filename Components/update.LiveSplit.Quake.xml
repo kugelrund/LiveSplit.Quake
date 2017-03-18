@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.10">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add new event for starting a run. Makes autostarting of the splitter a lot more convenient.
+      </change>
+    </changelog>
+  </update>
   <update version="1.9">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>

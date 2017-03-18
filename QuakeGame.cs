@@ -6,7 +6,8 @@ namespace LiveSplit.Quake
 
     class QuakeGame : Game
     {
-        private static readonly Type[] eventTypes = new Type[] { typeof(LoadedMapEvent),
+        private static readonly Type[] eventTypes = new Type[] { typeof(StartedRunEvent),
+                                                                 typeof(LoadedMapEvent),
                                                                  typeof(ShubNiggurathDeadEvent) };
         public override Type[] EventTypes => eventTypes;
 
@@ -35,6 +36,21 @@ namespace LiveSplit.Quake
             {
                 return new EmptyEvent();
             }
+        }
+    }
+
+    class StartedRunEvent : NoAttributeEvent
+    {
+        public override string Description => "A new run was started.";
+
+        public override bool HasOccured(GameInfo info)
+        {
+            return info.CounterChanged && info.CurrMap == "start";
+        }
+
+        public override string ToString()
+        {
+            return "Start of new run";
         }
     }
 
@@ -100,14 +116,17 @@ namespace LiveSplit.ComponentAutosplitter
         private Int32 mapTimeAddress;
         private Int32 gameStateAddress;
         private Int32 gameNameAddress;
+        private Int32 counterAddress;
         private DeepPointer totalTimeAddress;
 
         private GameVersion gameVersion;
         private bool keepInGameTimeGoing = false;
         
         private float savedTotalTime = 0;
+        private int counter = 0;
 
         public string CurrMap { get; private set; }
+        public bool CounterChanged { get; private set; }
         public bool MapChanged { get; private set; }
         public float TotalTime { get; private set; }
         public float MapTime { get; private set; }
@@ -140,12 +159,14 @@ namespace LiveSplit.ComponentAutosplitter
                     mapTimeAddress = 0x6108F0;
                     gameStateAddress = 0x64F664;
                     gameNameAddress = 0x61E23D;
+                    counterAddress = 0x622294;
                     break;
                 case GameVersion.NeaQuake:
                     mapAddress = 0x26E368;
                     mapTimeAddress = 0x2619EC;
                     gameStateAddress = 0xB6AA84;
                     gameNameAddress = 0x12F101;
+                    counterAddress = 0x12DEA8;
                     break;
             }
             
@@ -181,6 +202,22 @@ namespace LiveSplit.ComponentAutosplitter
             }
         }
 
+        private void UpdateCounter()
+        {
+            int newCounter;
+            if (gameProcess.ReadValue(baseAddress + counterAddress, out newCounter))
+            {
+                if (counter != newCounter)
+                {
+                    counter = newCounter;
+                    CounterChanged = true;
+                    return;
+                }
+            }
+
+            CounterChanged = false;
+        }
+
         private void UpdateMap()
         {
             StringBuilder mapBuilder = new StringBuilder(32);
@@ -200,6 +237,7 @@ namespace LiveSplit.ComponentAutosplitter
 
         partial void UpdateInfo()
         {
+            UpdateCounter();
             UpdateMap();
 
             int currGameState;
@@ -259,8 +297,8 @@ namespace LiveSplit.ComponentAutosplitter
 
         partial void ResetInfo()
         {
-            UpdateMap();
             MapChanged = false;
+            CounterChanged = false;
             CurrGameState = QuakeState.Playing;
             TotalTime = 0;
             savedTotalTime = 0;
