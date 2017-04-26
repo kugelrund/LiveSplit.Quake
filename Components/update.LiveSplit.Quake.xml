@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.11">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add possibility to set the starting map to something other than "start" for the "new run started" event to allow for convenient timer starts in episode runs or ILs too.
+      </change>
+    </changelog>
+  </update>
   <update version="1.10">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>

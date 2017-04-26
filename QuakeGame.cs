@@ -39,18 +39,26 @@ namespace LiveSplit.Quake
         }
     }
 
-    class StartedRunEvent : NoAttributeEvent
+    class StartedRunEvent : MapEvent
     {
         public override string Description => "A new run was started.";
 
+        public StartedRunEvent() : base("start")
+        {
+        }
+
+        public StartedRunEvent(string map) : base((map.Length == 0) ? "start" : map)
+        {
+        }
+
         public override bool HasOccured(GameInfo info)
         {
-            return info.CounterChanged && info.CurrMap == "start";
+            return info.CounterChanged && (info.CurrMap == map);
         }
 
         public override string ToString()
         {
-            return "Start of new run";
+            return "Start of new run on '" + map + "'";
         }
     }
 
