@@ -308,6 +308,7 @@ namespace LiveSplit.ComponentAutosplitter
             MapChanged = false;
             CounterChanged = false;
             CurrGameState = QuakeState.Playing;
+            MapTime = 0;
             TotalTime = 0;
             savedTotalTime = 0;
         }

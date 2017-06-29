@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.12">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Fix time not being reset to 0 when resetting LiveSplit in some cases.
+      </change>
+    </changelog>
+  </update>
   <update version="1.11">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
