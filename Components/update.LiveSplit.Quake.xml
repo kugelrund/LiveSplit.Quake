@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.13">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add support for new JoeQuake build 5288.
+      </change>
+    </changelog>
+  </update>
   <update version="1.12">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
