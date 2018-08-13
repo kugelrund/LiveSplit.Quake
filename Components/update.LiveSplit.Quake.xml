@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.14">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add doestats support for "Dissolution of Eternity" aka "rogue".
+      </change>
+    </changelog>
+  </update>
   <update version="1.13">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>

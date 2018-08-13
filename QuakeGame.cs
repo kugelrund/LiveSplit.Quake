@@ -178,6 +178,25 @@ namespace LiveSplit.ComponentAutosplitter
                     break;
             }
 
+            System.Threading.Thread.Sleep(200);  // a bit stupid but just to make sure
+                                                 // game name is set already
+            StringBuilder gameNameBuilder = new StringBuilder(32);
+            gameProcess.ReadString(baseAddress + gameNameAddress, gameNameBuilder);
+            string gameName = gameNameBuilder.ToString();
+            Int32 totalTimeAddressOffset;
+            switch (gameName)
+            {
+                case "hipnotic":
+                    totalTimeAddressOffset = 0x40AC;
+                    break;
+                case "rogue":
+                    totalTimeAddressOffset = 0x527C;
+                    break;
+                default:
+                    totalTimeAddressOffset = 0x2948;
+                    break;
+            }
+
             switch (gameVersion)
             {
                 case GameVersion.JoeQuake3798:
@@ -186,6 +205,7 @@ namespace LiveSplit.ComponentAutosplitter
                     gameStateAddress = 0x64F664;
                     gameNameAddress = 0x61E23D;
                     counterAddress = 0x622294;
+                    totalTimeAddress = new DeepPointer(0x6FBFF8, totalTimeAddressOffset);
                     break;
                 case GameVersion.JoeQuake5288:
                     mapAddress = 0x3F6008;
@@ -193,6 +213,7 @@ namespace LiveSplit.ComponentAutosplitter
                     gameStateAddress = 0x34CC18;
                     gameNameAddress = 0x13B759;
                     counterAddress = 0x13A248;
+                    totalTimeAddress = new DeepPointer(0x3F4EA8, totalTimeAddressOffset);
                     break;
                 case GameVersion.NeaQuake:
                     mapAddress = 0x26E368;
@@ -200,57 +221,7 @@ namespace LiveSplit.ComponentAutosplitter
                     gameStateAddress = 0xB6AA84;
                     gameNameAddress = 0x12F101;
                     counterAddress = 0x12DEA8;
-                    break;
-            }
-            
-            System.Threading.Thread.Sleep(200);  // a bit stupid but just to make sure
-                                                 // game name is set already
-            StringBuilder gameNameBuilder = new StringBuilder(32);
-            gameProcess.ReadString(baseAddress + gameNameAddress, gameNameBuilder);
-            string gameName = gameNameBuilder.ToString();            
-            switch (gameName)
-            {
-                case "hipnotic":
-                    switch (gameVersion)
-                    {
-                        case GameVersion.JoeQuake3798:
-                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x40AC);
-                            break;
-                        case GameVersion.JoeQuake5288:
-                            totalTimeAddress = new DeepPointer(0x3F4EA8, 0x40AC);
-                            break;
-                        case GameVersion.NeaQuake:
-                            totalTimeAddress = new DeepPointer(0x28085C, 0x40AC);
-                            break;
-                    }
-                    break;
-                case "rogue":
-                    switch (gameVersion)
-                    {
-                        case GameVersion.JoeQuake3798:
-                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x527C);
-                            break;
-                        case GameVersion.JoeQuake5288:
-                            totalTimeAddress = new DeepPointer(0x3F4EA8, 0x527C);
-                            break;
-                        case GameVersion.NeaQuake:
-                            totalTimeAddress = new DeepPointer(0x28085C, 0x527C);
-                            break;
-                    }
-                    break;
-                default:
-                    switch (gameVersion)
-                    {
-                        case GameVersion.JoeQuake3798:
-                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x2948);
-                            break;
-                        case GameVersion.JoeQuake5288:
-                            totalTimeAddress = new DeepPointer(0x3F4EA8, 0x2948);
-                            break;
-                        case GameVersion.NeaQuake:
-                            totalTimeAddress = new DeepPointer(0x28085C, 0x2948);
-                            break;
-                    }
+                    totalTimeAddress = new DeepPointer(0x28085C, totalTimeAddressOffset);
                     break;
             }
         }
