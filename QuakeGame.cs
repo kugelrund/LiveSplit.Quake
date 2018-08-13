@@ -224,6 +224,20 @@ namespace LiveSplit.ComponentAutosplitter
                             break;
                     }
                     break;
+                case "rogue":
+                    switch (gameVersion)
+                    {
+                        case GameVersion.JoeQuake3798:
+                            totalTimeAddress = new DeepPointer(0x6FBFF8, 0x527C);
+                            break;
+                        case GameVersion.JoeQuake5288:
+                            totalTimeAddress = new DeepPointer(0x3F4EA8, 0x527C);
+                            break;
+                        case GameVersion.NeaQuake:
+                            totalTimeAddress = new DeepPointer(0x28085C, 0x527C);
+                            break;
+                    }
+                    break;
                 default:
                     switch (gameVersion)
                     {
