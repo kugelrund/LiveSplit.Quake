@@ -124,7 +124,6 @@ namespace LiveSplit.ComponentAutosplitter
         private Int32 mapAddress;
         private Int32 mapTimeAddress;
         private Int32 gameStateAddress;
-        private Int32 gameNameAddress;
         private Int32 counterAddress;
         private DeepPointer totalTimeAddress;
 
@@ -180,6 +179,19 @@ namespace LiveSplit.ComponentAutosplitter
 
             System.Threading.Thread.Sleep(200);  // a bit stupid but just to make sure
                                                  // game name is set already
+            Int32 gameNameAddress = 0;
+            switch (gameVersion)
+            {
+                case GameVersion.JoeQuake3798:
+                    gameNameAddress = 0x61E23D;
+                    break;
+                case GameVersion.JoeQuake5288:
+                    gameNameAddress = 0x13B759;
+                    break;
+                case GameVersion.NeaQuake:
+                    gameNameAddress = 0x12F101;
+                    break;
+            }
             StringBuilder gameNameBuilder = new StringBuilder(32);
             gameProcess.ReadString(baseAddress + gameNameAddress, gameNameBuilder);
             string gameName = gameNameBuilder.ToString();
@@ -187,7 +199,7 @@ namespace LiveSplit.ComponentAutosplitter
             switch (gameName)
             {
                 case "hipnotic":
-                    totalTimeAddressOffset = 0x40AC;
+                    totalTimeAddressOffset = 0x3278;
                     break;
                 case "rogue":
                     totalTimeAddressOffset = 0x527C;
@@ -203,7 +215,6 @@ namespace LiveSplit.ComponentAutosplitter
                     mapAddress = 0x6FD148;
                     mapTimeAddress = 0x6108F0;
                     gameStateAddress = 0x64F664;
-                    gameNameAddress = 0x61E23D;
                     counterAddress = 0x622294;
                     totalTimeAddress = new DeepPointer(0x6FBFF8, totalTimeAddressOffset);
                     break;
@@ -211,7 +222,6 @@ namespace LiveSplit.ComponentAutosplitter
                     mapAddress = 0x3F6008;
                     mapTimeAddress = 0x2FEF74;
                     gameStateAddress = 0x34CC18;
-                    gameNameAddress = 0x13B759;
                     counterAddress = 0x13A248;
                     totalTimeAddress = new DeepPointer(0x3F4EA8, totalTimeAddressOffset);
                     break;
@@ -219,7 +229,6 @@ namespace LiveSplit.ComponentAutosplitter
                     mapAddress = 0x26E368;
                     mapTimeAddress = 0x2619EC;
                     gameStateAddress = 0xB6AA84;
-                    gameNameAddress = 0x12F101;
                     counterAddress = 0x12DEA8;
                     totalTimeAddress = new DeepPointer(0x28085C, totalTimeAddressOffset);
                     break;
