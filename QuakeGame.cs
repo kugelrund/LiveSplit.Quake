@@ -265,7 +265,7 @@ namespace LiveSplit.ComponentAutosplitter
                     break;
                 case GameVersion.JoeQuake6454:
                     mapAddress = 0xD441A8;
-                    mapTimeAddress = 0x307090;
+                    mapTimeAddress = 0xD65A41;
                     gameStateAddress = 0xD244AC;
                     counterAddress = 0x142348;
                     totalTimeAddress = new DeepPointer(0xD43048, totalTimeAddressOffset);
