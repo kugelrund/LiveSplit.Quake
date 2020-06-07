@@ -6,8 +6,9 @@ namespace LiveSplit.Quake
 
     class QuakeGame : Game
     {
-        private static readonly Type[] eventTypes = new Type[] { typeof(StartedRunEvent),
+        private static readonly Type[] eventTypes = new Type[] { typeof(MapChangedEvent),
                                                                  typeof(LoadedMapEvent),
+                                                                 typeof(StartedRunEvent),
                                                                  typeof(ShubNiggurathDeadEvent) };
         public override Type[] EventTypes => eventTypes;
 
@@ -82,6 +83,21 @@ namespace LiveSplit.Quake
         public override string ToString()
         {
             return "Map '" + map + "' was loaded";
+        }
+    }
+
+    class MapChangedEvent : NoAttributeEvent
+    {
+        public override string Description => "A different map was loaded.";
+
+        public override bool HasOccured(GameInfo info)
+        {
+            return info.MapChanged;
+        }
+
+        public override string ToString()
+        {
+            return "Map has changed";
         }
     }
 

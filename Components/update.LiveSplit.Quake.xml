@@ -1,4 +1,17 @@
 <updates>
+  <update version="1.19">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add splitting event for any map change.
+      </change>
+      <change>
+        Fix timer not updating when running with -no24bit.
+      </change>
+    </changelog>
+  </update>
   <update version="1.18">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
