@@ -118,12 +118,14 @@ namespace LiveSplit.Quake
 
     public enum GameVersion
     {
+        // order this by release date to allow checking backwards compatibility
+        // with inequality comparisons on this enum
         JoeQuake3798,   // joequake-gl.exe build 3798
+        NeaQuake,       // NeaQuakeGL.exe Version 1
         JoeQuake5288,   // joequake-gl.exe build 5288
         JoeQuake6300,   // joequake-gl.exe build 6300 (version 0.16.2)
         JoeQuake6320,   // joequake-gl.exe build 6320 (version 0.16.2)
-        JoeQuake6454,   // joequake-gl.exe build 6454 (version 0.16.2)
-        NeaQuake        // NeaQuakeGL.exe Version 1
+        JoeQuake6454    // joequake-gl.exe build 6454 (version 0.16.2)
     }
 
     public enum QuakeState
@@ -258,6 +260,13 @@ namespace LiveSplit.ComponentAutosplitter
                     counterAddress = 0x622294;
                     totalTimeAddress = new DeepPointer(0x6FBFF8, totalTimeAddressOffset);
                     break;
+                case GameVersion.NeaQuake:
+                    mapAddress = 0x26E368;
+                    mapTimeAddress = 0x2619EC;
+                    gameStateAddress = 0xB6AA84;
+                    counterAddress = 0x12DEA8;
+                    totalTimeAddress = new DeepPointer(0x28085C, totalTimeAddressOffset);
+                    break;
                 case GameVersion.JoeQuake5288:
                     mapAddress = 0x3F6008;
                     mapTimeAddress = 0x2FEF74;
@@ -281,17 +290,10 @@ namespace LiveSplit.ComponentAutosplitter
                     break;
                 case GameVersion.JoeQuake6454:
                     mapAddress = 0xD441A8;
-                    mapTimeAddress = 0xD65A41;
+                    mapTimeAddress = 0xD244D8;
                     gameStateAddress = 0xD244AC;
                     counterAddress = 0x142348;
                     totalTimeAddress = new DeepPointer(0xD43048, totalTimeAddressOffset);
-                    break;
-                case GameVersion.NeaQuake:
-                    mapAddress = 0x26E368;
-                    mapTimeAddress = 0x2619EC;
-                    gameStateAddress = 0xB6AA84;
-                    counterAddress = 0x12DEA8;
-                    totalTimeAddress = new DeepPointer(0x28085C, totalTimeAddressOffset);
                     break;
             }
         }
@@ -361,7 +363,21 @@ namespace LiveSplit.ComponentAutosplitter
                 //
 
                 float mapTime;
-                if (gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime))
+                bool successReadMapTime;
+                if (gameVersion >= GameVersion.JoeQuake6454)
+                {
+                    // Historically we were using a float value for map time. Unfortunately that one turned out to not
+                    // work with -no24bit, and the only really appropriate alternative values are double. So we read
+                    // double from now on but the float stuff sticks around for backwards compatibility.
+                    successReadMapTime = gameProcess.ReadValue(baseAddress + mapTimeAddress, out double mapTimeDouble);
+                    mapTime = (float)mapTimeDouble;
+                }
+                else
+                {
+                    successReadMapTime = gameProcess.ReadValue(baseAddress + mapTimeAddress, out mapTime);
+                }
+
+                if (successReadMapTime)
                 {
                     if (keepInGameTimeGoing && MapTime > mapTime)
                     {
