@@ -13,7 +13,7 @@ namespace LiveSplit.Quake
         public override Type[] EventTypes => eventTypes;
 
         public override string Name => "Quake";
-        public override string[] ProcessNames => new string[] { "joequake-gl", "NeaQuakeGL" };
+        public override string[] ProcessNames => new string[] { "joequake-gl", "quake3", "NeaQuakeGL" };
         public override bool GameTimeExists => true;
         public override bool LoadRemovalExists => false;
 
@@ -172,6 +172,7 @@ namespace LiveSplit.ComponentAutosplitter
             switch (gameProcess.ProcessName)
             {
                 case "joequake-gl":
+                case "quake3":
                     {
                         ProcessModuleWow64Safe mainModule = gameProcess.MainModuleWow64Safe();
                         if (!mainModule.ModuleName.EndsWith(".exe"))

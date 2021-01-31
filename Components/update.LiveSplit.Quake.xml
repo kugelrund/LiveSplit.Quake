@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.22">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Support for joequake-gl.exe being renamed to quake3.exe.
+      </change>
+    </changelog>
+  </update>
   <update version="1.21">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
