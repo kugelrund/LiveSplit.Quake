@@ -127,6 +127,7 @@ namespace LiveSplit.Quake
         JoeQuake6320,   // joequake-gl.exe build 6320 (version 0.16.2)
         JoeQuake6454,   // joequake-gl.exe build 6454 (version 0.16.2)
         JoeQuake6689,   // joequake-gl.exe build 6689 (version 0.17.0)
+        JoeQuake6746,   // joequake-gl.exe build 6746 (version 0.17.1)
     }
 
     public enum QuakeState
@@ -147,7 +148,8 @@ namespace LiveSplit.ComponentAutosplitter
         private Int32 mapTimeAddress;
         private Int32 gameStateAddress;
         private Int32 counterAddress;
-        private DeepPointer totalTimeAddress;
+        private Int32 totalTimeAddress = 0;
+        private DeepPointer oldTotalTimePointer = null;
 
         private GameVersion gameVersion;
         private bool keepInGameTimeGoing = false;
@@ -206,6 +208,10 @@ namespace LiveSplit.ComponentAutosplitter
                         {
                             gameVersion = GameVersion.JoeQuake6689;
                         }
+                        else if (mainModule.ModuleMemorySize == 35889152)
+                        {
+                            gameVersion = GameVersion.JoeQuake6746;
+                        }
                         break;
                     }
                 case "NeaQuakeGL":
@@ -239,6 +245,9 @@ namespace LiveSplit.ComponentAutosplitter
                 case GameVersion.JoeQuake6689:
                     gameNameAddress = 0x5D8480;
                     break;
+                case GameVersion.JoeQuake6746:
+                    gameNameAddress = 0x5E2620;
+                    break;
                 case GameVersion.NeaQuake:
                     gameNameAddress = 0x12F101;
                     break;
@@ -246,20 +255,20 @@ namespace LiveSplit.ComponentAutosplitter
             StringBuilder gameNameBuilder = new StringBuilder(32);
             gameProcess.ReadString(baseAddress + gameNameAddress, gameNameBuilder);
             string gameName = gameNameBuilder.ToString();
-            Int32 totalTimeAddressOffset;
+            Int32 oldTotalTimePointerOffset;
             switch (gameName)
             {
                 case "hipnotic":
-                    totalTimeAddressOffset = 0x3278;
+                    oldTotalTimePointerOffset = 0x3278;
                     break;
                 case "rogue":
-                    totalTimeAddressOffset = 0x527C;
+                    oldTotalTimePointerOffset = 0x527C;
                     break;
                 case "digs01":
-                    totalTimeAddressOffset = 0x2958;
+                    oldTotalTimePointerOffset = 0x2958;
                     break;
                 default:
-                    totalTimeAddressOffset = 0x2948;
+                    oldTotalTimePointerOffset = 0x2948;
                     break;
             }
 
@@ -270,49 +279,56 @@ namespace LiveSplit.ComponentAutosplitter
                     mapTimeAddress = 0x6108F0;
                     gameStateAddress = 0x64F664;
                     counterAddress = 0x622294;
-                    totalTimeAddress = new DeepPointer(0x6FBFF8, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x6FBFF8, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.NeaQuake:
                     mapAddress = 0x26E368;
                     mapTimeAddress = 0x2619EC;
                     gameStateAddress = 0xB6AA84;
                     counterAddress = 0x12DEA8;
-                    totalTimeAddress = new DeepPointer(0x28085C, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x28085C, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.JoeQuake5288:
                     mapAddress = 0x3F6008;
                     mapTimeAddress = 0x2FEF74;
                     gameStateAddress = 0x34CC18;
                     counterAddress = 0x13A248;
-                    totalTimeAddress = new DeepPointer(0x3F4EA8, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x3F4EA8, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.JoeQuake6300:
                     mapAddress = 0x4005C8;
                     mapTimeAddress = 0x305FF0;
                     gameStateAddress = 0x3F520C;
                     counterAddress = 0x1412A8;
-                    totalTimeAddress = new DeepPointer(0x3FF468, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x3FF468, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.JoeQuake6320:
                     mapAddress = 0x401628;
                     mapTimeAddress = 0x307050;
                     gameStateAddress = 0x3F626C;
                     counterAddress = 0x142308;
-                    totalTimeAddress = new DeepPointer(0x4004C8, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x4004C8, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.JoeQuake6454:
                     mapAddress = 0xD441A8;
                     mapTimeAddress = 0xD244D8;
                     gameStateAddress = 0xD244AC;
                     counterAddress = 0x142348;
-                    totalTimeAddress = new DeepPointer(0xD43048, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0xD43048, oldTotalTimePointerOffset);
                     break;
                 case GameVersion.JoeQuake6689:
                     mapAddress = 0x782A48;
                     mapTimeAddress = 0x745658;
                     gameStateAddress = 0x74562C;
                     counterAddress = 0x14B484;
-                    totalTimeAddress = new DeepPointer(0x77C970, totalTimeAddressOffset);
+                    oldTotalTimePointer = new DeepPointer(0x77C970, oldTotalTimePointerOffset);
+                    break;
+                case GameVersion.JoeQuake6746:
+                    mapAddress = 0x78CBE8;
+                    mapTimeAddress = 0x74F7F8;
+                    gameStateAddress = 0x74F7CC;
+                    counterAddress = 0x1514CC;
+                    totalTimeAddress = 0x754A48;
                     break;
             }
         }
@@ -350,6 +366,29 @@ namespace LiveSplit.ComponentAutosplitter
             }
         }
 
+        private bool ReadTotalTime(out float currentTotalTime)
+        {
+            if (oldTotalTimePointer != null)
+            {
+                // old method with a pointer path to something in the specific
+                // qdqstats progs, different depending on the specific mod
+                return oldTotalTimePointer.Deref(gameProcess, out currentTotalTime);
+            }
+            else if (totalTimeAddress != 0)
+            {
+                // new method with new JoeQuake that directly provides total
+                // time in static memory. That one is also in double precision.
+                if (gameProcess.ReadValue(baseAddress + totalTimeAddress,
+                                          out double currentTotalTimeDouble))
+                {
+                    currentTotalTime = (float)currentTotalTimeDouble;
+                    return true;
+                }
+            }
+            currentTotalTime = 0.0f;
+            return false;
+        }
+
         partial void UpdateInfo()
         {
             UpdateCounter();
@@ -365,7 +404,7 @@ namespace LiveSplit.ComponentAutosplitter
             {
                 // we are in an intermission, so total time should be available now.
                 float currentTotalTime;
-                if (totalTimeAddress.Deref(gameProcess, out currentTotalTime) && currentTotalTime > 0)
+                if (ReadTotalTime(out currentTotalTime) && currentTotalTime > 0)
                 {
                     // set time to the one that qdqstats says + an eventually saved one that isn't included
                     // in the qdqTotalTime because there was a reset
