@@ -437,7 +437,8 @@ namespace LiveSplit.ComponentAutosplitter
 
                 if (successReadMapTime)
                 {
-                    if (keepInGameTimeGoing && MapTime > mapTime)
+                    const float resetTolerance = 0.001f;
+                    if (keepInGameTimeGoing && MapTime > mapTime + resetTolerance)
                     {
                         // new map time is smaller than old map time? This means that there was a reset, so
                         // qdqstats' total time will be reset. Therefore update savedTotalTime
