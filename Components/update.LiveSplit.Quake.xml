@@ -1,4 +1,14 @@
 <updates>
+  <update version="1.27">
+    <files>
+      <file path="Components/LiveSplit.Quake.dll" status="changed"/>
+    </files>
+    <changelog>
+      <change>
+        Add support for JoeQuake version 0.17.4 (Build 7319)
+      </change>
+    </changelog>
+  </update>
   <update version="1.26">
     <files>
       <file path="Components/LiveSplit.Quake.dll" status="changed"/>
