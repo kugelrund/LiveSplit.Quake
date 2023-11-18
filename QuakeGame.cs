@@ -134,6 +134,7 @@ namespace LiveSplit.Quake
         JoeQuake7319,   // joequake-gl.exe build 7319 (version 0.17.4)
         JoeQuake7492,   // joequake-gl.exe build 7492 (version 0.17.5)
         JoeQuake7652,   // joequake-gl.exe build 7652 (version 0.17.6)
+        JoeQuake7733,   // joequake-gl.exe build 7733 (version 0.17.7)
     }
 
     public enum QuakeState
@@ -242,6 +243,10 @@ namespace LiveSplit.ComponentAutosplitter
                         {
                             gameVersion = GameVersion.JoeQuake7652;
                         }
+                        else if (mainModule.ModuleMemorySize == 75194368)
+                        {
+                            gameVersion = GameVersion.JoeQuake7733;
+                        }
                         break;
                     }
                 case "NeaQuakeGL":
@@ -295,6 +300,9 @@ namespace LiveSplit.ComponentAutosplitter
                     break;
                 case GameVersion.JoeQuake7652:
                     gameNameAddress = 0x42233C0;
+                    break;
+                case GameVersion.JoeQuake7733:
+                    gameNameAddress = 0x425BC60;
                     break;
                 case GameVersion.NeaQuake:
                     gameNameAddress = 0x12F101;
@@ -419,6 +427,13 @@ namespace LiveSplit.ComponentAutosplitter
                     gameStateAddress = 0x43A066C;
                     counterAddress = 0x17704C;
                     totalTimeAddress = 0x43A5948;
+                    break;
+                case GameVersion.JoeQuake7733:
+                    mapAddress = 0x4418A88;
+                    mapTimeAddress = 0x4418A70;
+                    gameStateAddress = 0x43D90AC;
+                    counterAddress = 0x17CFFC;
+                    totalTimeAddress = 0x43DE388;
                     break;
             }
         }
