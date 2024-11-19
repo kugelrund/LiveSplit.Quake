@@ -13,7 +13,7 @@ namespace LiveSplit.Quake
         public override Type[] EventTypes => eventTypes;
 
         public override string Name => "Quake";
-        public override string[] ProcessNames => new string[] { "joequake-gl", "quake3", "NeaQuakeGL" };
+        public override string[] ProcessNames => new string[] { "joequake-gl", "joequake-gl-sdl", "quake3", "NeaQuakeGL" };
         public override bool GameTimeExists => true;
         public override bool LoadRemovalExists => false;
 
@@ -136,6 +136,7 @@ namespace LiveSplit.Quake
         JoeQuake7652,   // joequake-gl.exe build 7652 (version 0.17.6)
         JoeQuake7733,   // joequake-gl.exe build 7733 (version 0.17.7)
         JoeQuake8039,   // joequake-gl.exe build 8039 (version 0.17.8)
+        JoeQuakeWithExportedSpeedrunData,
     }
 
     public enum QuakeState
@@ -177,8 +178,64 @@ namespace LiveSplit.ComponentAutosplitter
             keepInGameTimeGoing = customSettings[0].Value;
         }
 
+        private bool UseBuiltinExportedSpeedrunData()
+        {
+            ProcessModuleWow64Safe mainModule = gameProcess.MainModuleWow64Safe();
+            if (!mainModule.ModuleName.EndsWith(".exe"))
+            {
+                // kind of a workaround for MainModuleWow64Safe maybe not returning
+                // the correct module
+                throw new ArgumentException("Process not initialised yet!");
+            }
+
+            var scanner = new SignatureScanner(
+                gameProcess, mainModule.BaseAddress, mainModule.ModuleMemorySize
+            );
+            var magic_id = new byte[] {
+                0x6D, 0x61, 0x67, 0x69, 0x63, 0x20,                    // magic
+                0x69, 0x64, 0x20,                                      // id
+                0x66, 0x6F, 0x72, 0x20,                                // for
+                0x73, 0x70, 0x65, 0x65, 0x64, 0x72, 0x75, 0x6E, 0x20,  // speedrun
+                0x64, 0x61, 0x74, 0x61, 0x20,                          // data
+                0x66, 0x6F, 0x72, 0x20,                                // for
+                0x6C, 0x69, 0x76, 0x65, 0x73, 0x70, 0x6C, 0x69, 0x74   // livesplit
+            };
+            var ptr = scanner.Scan(new SigScanTarget(magic_id));
+            if (ptr == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            ptr += magic_id.Length;
+            if (!gameProcess.ReadValue(ptr, out totalTimeAddress)) { return false; }
+            totalTimeAddress -= (int)mainModule.BaseAddress;
+            ptr += sizeof(Int32);
+
+            if (!gameProcess.ReadValue(ptr, out mapTimeAddress)) { return false; }
+            mapTimeAddress -= (int)mainModule.BaseAddress;
+            ptr += sizeof(Int32);
+
+            if (!gameProcess.ReadValue(ptr, out gameStateAddress)) { return false; }
+            gameStateAddress -= (int)mainModule.BaseAddress;
+            ptr += sizeof(Int32);
+
+            if (!gameProcess.ReadValue(ptr, out mapAddress)) { return false; }
+            mapAddress -= (int)mainModule.BaseAddress;
+            ptr += sizeof(Int32);
+
+            counterAddress = (int)ptr - (int)mainModule.BaseAddress;
+
+            gameVersion = GameVersion.JoeQuakeWithExportedSpeedrunData;
+            return true;
+        }
+
         partial void GetVersion()
         {
+            if (UseBuiltinExportedSpeedrunData())
+            {
+                return;  // everything already detected automatically
+            }
+
             switch (gameProcess.ProcessName)
             {
                 case "joequake-gl":
